@@ -10,7 +10,7 @@ Python program that grabs OHLCV market data from Bybit servers for all tradeable
 # HOW TO:
 1. Install requirements
 3. Bybit Setup  
-&nbsp;&nbsp;&nbsp;&nbsp;i. This includes creating an account and having API access
+&nbsp;&nbsp;&nbsp;&nbsp;i. This includes creating an account and having API access  
 &nbsp;&nbsp;&nbsp;&nbsp;ii. You need to copy your API details into the login file.
 5. Figure out which assets you want to download from Bybit  
 &nbsp;&nbsp;&nbsp;&nbsp;i. Currently downloads all tradeable perpetual assets, primarily the 5m OHLCV data (this can be changed to any timeframe)

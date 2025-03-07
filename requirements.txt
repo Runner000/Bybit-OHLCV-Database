@@ -1,0 +1,13 @@
+pybit
+pandas
+sqalchemy
+connectorx
+datetime
+discord
+conncurent
+nest_asyncio
+statistics
+newnewtulipy
+pandas_ta
+scipy
+numpy

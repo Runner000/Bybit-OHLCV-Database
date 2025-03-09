@@ -18,6 +18,6 @@ Python program that grabs OHLCV market data from Bybit servers for all tradeable
 &nbsp;&nbsp;&nbsp;&nbsp;i. Currently analyzes BTC, ETH, and ALL ASSETS in the DB  
 &nbsp;&nbsp;&nbsp;&nbsp;ii. Data is collected and sent to a Discord server. Feel free to adapt this part, you can also send plots.
 
-This provides you with a lite database of all assets from Bybit. If you want to manually edit your DB I recommend [SQLiteStudio](https://sqlitestudio.pl/)
+This provides you with a lite database of all assets from Bybit. If you want to manually edit your DB I recommend [SQLiteStudio](https://sqlitestudio.pl/)  
 Your new database is now available via SQL calls and is very useful for backtesting different strategies.
 

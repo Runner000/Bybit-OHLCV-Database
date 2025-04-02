@@ -4,13 +4,30 @@ from sqlalchemy import create_engine, inspect
 from scipy.signal import savgol_filter, find_peaks
 from parameters import db_path
 
-# Resample OHLC data to whatever interval is passed
 def resamp(df, interval):
+    """
+    Resamples the given DataFrame to the specified time interval, aggregating the OHLC data.
+    Args:
+        df (DataFrame): The input DataFrame containing OHLC data with a 'Time' column.
+        interval (str): The time interval to resample the data (e.g., '1H', '30T').
+    Returns:
+        DataFrame: A resampled DataFrame with aggregated OHLC data.
+    """
     df = df.resample(interval, on='Time').agg({'Open':'first', 'High':'max', 'Low':'min', 'Close':'last', 'Volume':'sum'})
     return df
 
-# Grabs the last amount of candles for symbol from DB
 def grab_df(symbol, hours, candles, time1, time2):
+    """
+    Retrieves the last specified number of candles for a given symbol from the database.
+    Args:
+        symbol (str): The trading symbol to fetch data for.
+        hours (int): The number of hours to use for resampling.
+        candles (int): The minimum number of candles to return.
+        time1 (datetime): The end time for the query.
+        time2 (datetime): The start time for the query.
+    Returns:
+        DataFrame or bool: A DataFrame containing the candle data if successful, otherwise False.
+    """
         qry = f"""SELECT * FROM '{symbol}' WHERE (Time >= '{time2}' and Time <= '{time1}')"""
         df = cx.read_sql(db_path, query=qry)
         try:
@@ -22,6 +39,14 @@ def grab_df(symbol, hours, candles, time1, time2):
         else: return df
 
 def dfTimes(hour,candles):
+    """
+    Calculates the time range for fetching candle data based on the specified hours and number of candles.
+    Args:
+        hour (int): The number of hours to consider for the time range.
+        candles (int): The number of candles to consider for the time range.
+    Returns:
+        tuple: A tuple containing the start time (time1) and end time (time2) for the query.
+    """
     num_candles = int((12*hour)*candles)
     time1 = cx.read_sql(db_path, f'SELECT * FROM aaa1INCHUSDT ORDER BY Time DESC LIMIT 1').values[0][0].to_pydatetime() + timedelta(minutes=1)
     time2 = cx.read_sql(db_path, f"SELECT * FROM BTCUSDT ORDER BY Time DESC LIMIT {num_candles}").values[-1][0].to_pydatetime()
@@ -213,6 +238,18 @@ def breakout(df):
     else: return False
 
 def alts_scan(**kwargs):
+    """
+    Scans various altcoin markets for specific trading signals and trends.
+    This function retrieves the latest 4-hour and 24-hour candle data for a list of altcoins,
+    checks for inside day patterns, breakout conditions, and evaluates the trend using a combo
+    indicator. It compiles this information into formatted strings for output.
+    Args:
+        **kwargs: Additional keyword arguments, including:
+            - candles (int): The number of candles to retrieve (default is 300).
+            - symbols (list): A list of symbols to scan (default is all symbols in the database).
+    Returns:
+        tuple: A tuple containing two formatted strings with the results of the altcoin scans.
+    """
     candles = kwargs.get('candles', 300)
     symbols = kwargs.get('symbols', inspect(create_engine(db_path)).get_table_names())
 
@@ -278,6 +315,15 @@ def alts_scan(**kwargs):
     return payload1, payload2
 
 def btc_scan():
+    """
+    Scans the BTCUSDT market for specific trading signals and trends.
+    This function retrieves the latest 4-hour and 24-hour candle data for BTCUSDT,
+    checks for EMA crossovers, evaluates the position relative to the 200 EMA,
+    and assesses the market structure. It then compiles this information into a
+    formatted string for output.
+    Returns:
+        str: A formatted string containing the results of the BTC scan.
+    """
     print('Scanning BTC')
     candles = 300
     time1_4, time2_4 = dfTimes(4, candles)
@@ -301,6 +347,15 @@ def btc_scan():
     return payload
 
 def eth_scan():
+    """
+    Scans the ETHUSDT market for specific trading signals and trends.
+    This function retrieves the latest 4-hour and 24-hour candle data for ETHUSDT,
+    checks for EMA crossovers, evaluates the position relative to the 200 EMA,
+    and assesses the market structure. It then compiles this information into a
+    formatted string for output.
+    Returns:
+        str: A formatted string containing the results of the ETH scan.
+    """
     print('Scanning ETH')
     candles = 300
     time1_4, time2_4 = dfTimes(4, candles)

@@ -13,6 +13,12 @@ client = discord.Client(intents = discord.Intents.default())
 
 # Grabs all bybit perp assets, grabs last recorded candle in DB, grabs bybit kline data from last record, inserts new candels into DB
 def update_db():
+    """
+    Updates the database with the latest trading data from Bybit.
+    This function retrieves all perpetual assets from Bybit, checks the last recorded candle 
+    in the database, fetches new kline data from Bybit, and inserts the new candles into the database.
+    It also checks for delisted symbols and deletes them from the database every 24 hours.
+    """
     start_time_db = perf_counter()
     counter = 0
     assets = bybit.get_assets()
@@ -49,7 +55,10 @@ def update_db():
 
 @client.event
 async def on_ready():
-
+    """
+    Event handler for when the Discord bot is ready.
+    This function sends messages to a specified Discord channel when the bot is ready.
+    """
     guild = discord.utils.get(client.guilds, name='Trading')
     channel = discord.utils.get(guild.text_channels, name='🌐│ema-scans')
     for payload in payloads:
@@ -57,6 +66,10 @@ async def on_ready():
     await client.close()
 
 def data_scans():
+    """
+    Performs various data scans for trading signals.
+    This function runs different analysis scans (e.g., EMA scans) and returns the results.
+    """
     start_time_scans = perf_counter()
 
     print("Starting EMA Scans:\n")

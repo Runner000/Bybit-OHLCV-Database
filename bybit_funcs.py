@@ -6,6 +6,11 @@ from datetime import timezone, timedelta
 
 # Creates a bybit session
 def session():
+    """
+    Initializes a session with the Bybit API using the provided API key and secret.
+    Returns:
+        HTTP: An instance of the HTTP class for making API calls.
+    """
     session = HTTP(
        api_key=api.bybit_key,
        api_secret=api.bybit_secret,
@@ -14,6 +19,17 @@ def session():
 
 # Returns list of ['unixTime*1000 (ms)', 'O', 'H', 'L', 'C', 'V', 'turnover'] over provided interval starting at provided datetime
 def flatfile(symbol, start_time, **kwargs):
+        """
+    Fetches historical kline data for a specified trading symbol starting from a given datetime.
+    Args:
+        symbol (str): The trading symbol to fetch data for.
+        start_time (datetime): The starting datetime for fetching kline data.
+        **kwargs: Additional keyword arguments, including:
+            - latest (bool): If True, fetches the latest kline data.
+            - interval (str): The time interval for the kline data (default is '5' minutes).
+    Returns:
+        dict: A dictionary containing the symbol and its corresponding kline data.
+    """
     latest = kwargs.get('latest', False)
 
     ######***** Feel free to change the interval to whatever you want! *****######
@@ -47,6 +63,13 @@ def flatfile(symbol, start_time, **kwargs):
     return {symbol:data}
 
 def frame(data):
+    """
+    Converts raw kline data into a pandas DataFrame for analysis.
+    Args:
+        data (list): A list of kline data, where each entry contains time, open, high, low, close, volume, and turnover.
+    Returns:
+        DataFrame: A pandas DataFrame with the kline data, indexed by time.
+    """
     df = pd.DataFrame(data, columns = ['Time', 'Open', 'High', 'Low', 'Close', 'Volume', 'turnover'])
     f = lambda x: datetime.datetime.utcfromtimestamp(int(x)/1000)
     df.index = df.Time.apply(f)
@@ -56,6 +79,11 @@ def frame(data):
 
 # Gets a list of all currently tradeable linear perpetual USDT pairs
 def get_assets():
+    """
+    Fetches a list of all currently tradeable linear perpetual USDT pairs from the Bybit API.
+    Returns:
+        list: A list of tradeable symbols, excluding untradeable pairs and stablecoins.
+    """
     activate = session()
     symbols = []
     discard = ['USTCUSDT', 'USDCUSDT', 'BUSDUSDT', 'MAVIAUSDT', 'USDEUSDT'] # Eliminates any untradeable or Stablecoin pairs
